@@ -288,3 +288,29 @@ export interface AsistenciaEntryResponse {
   page: number;
   limit: number;
 }
+
+// Comment types
+export interface Comment {
+  id: string;
+  message: string;
+  userName: string;
+  userEmail: string;
+  userProfilePicture?: string;
+  createdAt: string;
+}
+
+export interface CommentResponse {
+  statusCode: number;
+  message: string;
+  data: Comment[];
+}
+
+export interface CreateCommentDto {
+  message: string;
+  supportMaterialId: string;
+}
+
+export interface DeleteCommentResponse {
+  statusCode: number;
+  message: string;
+}

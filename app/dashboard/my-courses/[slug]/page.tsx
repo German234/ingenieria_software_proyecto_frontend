@@ -26,6 +26,7 @@ import { DeleteModal } from "@/app/components/Popups/DeleteModal";
 import { RoleGuard } from "@/app/components/Dashboard/RoleGuard";
 import { ROLES } from "@/app/constants/roles";
 import { toast } from "@pheralb/toast";
+import CommentsSection from "@/app/components/Comments/CommentsSection";
 
 export default function Tablon() {
   const [openId, setOpenId] = useState<string | null>(null);
@@ -168,6 +169,19 @@ export default function Tablon() {
 
   return (
     <div className="min-h-screen">
+      {!course ? (
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-700 mb-2">
+              No se encontró el curso
+            </h2>
+            <p className="text-gray-500">
+              No tienes acceso a este curso o no existe
+            </p>
+          </div>
+        </div>
+      ) : (
+        <>
       <div className="relative h-48 sm:h-64 md:h-80 overflow-hidden rounded-b-2xl">
         <div className="absolute inset-0">
           <img
@@ -336,6 +350,11 @@ export default function Tablon() {
                             No hay archivos adjuntos
                           </p>
                         )}
+                        
+                        {/* Sección de Comentarios */}
+                        <div className="mt-6">
+                          <CommentsSection supportMaterialId={novedad._id} />
+                        </div>
                       </div>
                     </div>
                   )}
@@ -401,6 +420,8 @@ export default function Tablon() {
           )}
         />
       </RoleGuard>
+      </>
+      )}
     </div>
   );
 }

@@ -31,12 +31,17 @@ const Sidenav: React.FC = () => {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { data: session } = useSession();
   const user = session?.info;
+  const userRole = user?.role;
+
+  // Solo cargar "mis cursos" si NO es admin
+  const shouldLoadMyCourses = Boolean(userRole && userRole !== ROLES.ADMIN);
 
   const {
     data: mis_cursos,
   } = useQuery<Course[], Error>({
     queryKey: ["cursos"],
     queryFn: getMySections,
+    enabled: shouldLoadMyCourses, // Solo ejecutar si no es admin
   });
 
   useEffect(() => {
@@ -201,14 +206,14 @@ const Sidenav: React.FC = () => {
           <div className="flex items-center gap-2 flex-1">
             {user?.image ? (
               <img
-                src={user.image || '/default-avatar.png'}
+                src={user.image || '/default-avatar.jpg'}
                 alt="User avatar"
                 className="w-8 object-cover h-8 rounded-full"
                 width={32}
                 height={32}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.src = '/default-avatar.png';
+                  target.src = '/default-avatar.jpg';
                 }}
               />
             ) : (
@@ -284,14 +289,14 @@ const Sidenav: React.FC = () => {
               <div className="flex items-center gap-2 flex-1">
                 {user?.image ? (
                   <img
-                    src={user.image || '/default-avatar.png'}
+                    src={user.image || '/default-avatar.jpg'}
                     alt="User avatar"
                     className="w-8 object-cover h-8 rounded-full"
                     width={32}
                     height={32}
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = '/default-avatar.png';
+                      target.src = '/default-avatar.jpg';
                     }}
                   />
                 ) : (

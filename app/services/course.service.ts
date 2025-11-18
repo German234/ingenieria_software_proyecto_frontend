@@ -36,11 +36,18 @@ export const getCourseBySlug = async (slug: string): Promise<Course> => {
 export const updateCourse = async (
   course: CourseAddInterface
 ): Promise<CourseAddInterface> => {
- const { id, ...data } = course;
- console.log("Datos a actualizar:", data);
-  const response = await api.patch<CourseAddInterface>(`/user-x-work-groups/workgroup/${id}`, data);
-
-  return response.data;
+  try {
+    const { id, ...data } = course;
+    console.log("Datos a actualizar:", data);
+    const response = await api.patch<CourseAddInterface>(
+      `/user-x-work-groups/workgroup/${id}`, 
+      data
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating course:", error);
+    throw error;
+  }
 };
 
 
