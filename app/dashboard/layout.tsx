@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loading } from "../components/Loading";
 import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
-import { useSession } from "next-auth/react";
 import UpdateRequiredForm from "../components/Auth/UpdateRequiredForm";
 
 interface LayoutProps {
@@ -15,11 +14,15 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
     const router = useRouter();
     const [isChecking, setIsChecking] = useState(true);
-    const { status, data: session } = useSession();
+    
+    // TODO: Replace with your own authentication context
+    const status = "unauthenticated" as "loading" | "authenticated" | "unauthenticated"; // Placeholder
+    const session = null as any; // Placeholder - replace with your auth context
 
     const user = session?.info;
 
     useEffect(() => {
+        // TODO: Replace with your own authentication logic
         if (status === "unauthenticated") {
             router.push('/');
         } else if (status === "authenticated") {

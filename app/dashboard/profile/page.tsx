@@ -9,7 +9,6 @@ import {
   Lock,
   Key,
 } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
 import { toast } from "@pheralb/toast";
 import PageHeader from "@/app/components/Dashboard/PageHeader";
 
@@ -49,7 +48,8 @@ const InfoItem = ({
 
 
 export default function ProfilePage() {
-  const { data: session } = useSession();
+  // TODO: Replace with your own authentication context
+  const session = null as any; // Placeholder - replace with your auth context
   const user = session?.info;
 
   const handleLogout = () => {
@@ -58,7 +58,8 @@ export default function ProfilePage() {
       options: {
         promise: new Promise(() => {
           setTimeout(() => {
-            signOut({ callbackUrl: '/' })
+            // TODO: Replace with your own logout implementation
+            console.log("Logout called - implement your own logout logic");
           }, 1500);
         }),
         success: "Sesión cerrada con éxito!",

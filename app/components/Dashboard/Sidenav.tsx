@@ -16,7 +16,6 @@ import {
   UserCircle,
   Users2Icon
 } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 import { getMySections } from "@/app/services/course.service";
 import { NavItem, ProtectedNavItem } from "./NavItem";
@@ -29,7 +28,9 @@ const Sidenav: React.FC = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const { data: session } = useSession();
+  
+  // TODO: Replace with your own authentication context
+  const session = null as any; // Placeholder - replace with your auth context
   const user = session?.info;
   const userRole = user?.role;
 
@@ -70,7 +71,10 @@ const Sidenav: React.FC = () => {
 
   // Handlers
   const toggleMobileMenu = () => setIsMenuOpen((prev) => !prev);
-  const handleLogout = () => signOut({ callbackUrl: 'https://refuerzo-mendoza.me/' });
+  // TODO: Replace with your own logout implementation
+  const handleLogout = () => {
+    console.log("Logout called - implement your own logout logic");
+  };
 
 
   if (!isMounted) {

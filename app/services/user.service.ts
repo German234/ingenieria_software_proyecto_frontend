@@ -2,6 +2,7 @@ import { api } from "../lib/api";
 
 import {
   ActivateAccountRequirements,
+  AuthResponse,
   RequestPassResponse,
   UserEdited,
 } from "../types/types";
@@ -58,3 +59,20 @@ export const resetPassword = async (
   }
 };
 
+export const login = async (
+  email: string,
+  password: string,
+  recaptchaToken: string
+): Promise<AuthResponse> => {
+  const response = await api.post<AuthResponse>(
+    "/users/login",
+    { email, password, recaptchaToken },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  return response.data;
+};

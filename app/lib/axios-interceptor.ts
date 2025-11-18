@@ -10,13 +10,15 @@ export const setupAxiosInterceptor = () => {
   api.interceptors.request.use(
     async (config) => {
       try {
-        const { getSession } = await import("next-auth/react");
-        const session = await getSession();
-
-        console.log("Session data:", session);
+        // Get session from localStorage
+        const sessionData = localStorage.getItem("auth_session");
         
-        if (session?.token) {
-          config.headers.Authorization = `Bearer ${session.token}`;
+        if (sessionData) {
+          const session = JSON.parse(sessionData);
+          
+          if (session?.token) {
+            config.headers.Authorization = `Bearer ${session.token}`;
+          }
         }
       } catch (error) {
         console.error("Interceptor error (client-side only):", error);
