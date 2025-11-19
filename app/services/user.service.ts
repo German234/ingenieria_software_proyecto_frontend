@@ -220,11 +220,27 @@ export const refreshKeycloakToken = async (refreshToken: string): Promise<Keyclo
  * Handle OAuth callback by calling the API endpoint
  */
 export const handleAuthCallback = async (code: string, state?: string): Promise<CallbackResponse> => {
-  const response = await api.get<CallbackResponse>(
-    `/auth/callback?code=${code}${state ? `&state=${state}` : ''}`
-  );
+  try {
+    const response = await api.get<CallbackResponse>(
+      `/auth/callback?code=${code}${state ? `&state=${state}` : ''}`
+    );
 
-  return response.data;
+    return response.data;
+  } catch (error: any) {
+    // Handle HTTP errors and extract status code
+    if (error.response) {
+      return {
+        statusCode: error.response.status,
+        data: error.response.data?.message || "Error en la autenticación",
+      };
+    }
+    
+    // Handle network errors or other exceptions
+    return {
+      statusCode: 500,
+      data: error.message || "Error desconocido",
+    };
+  }
 };
 
 /**

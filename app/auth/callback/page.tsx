@@ -13,6 +13,12 @@ import Cookies from "js-cookie";
 function AccessDenied() {
   const { logout } = useAuth();
   
+  const handleLogout = async () => {
+    await logout();
+    // Redirect to login page after logout
+    window.location.href = '/';
+  };
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 p-8">
@@ -24,7 +30,7 @@ function AccessDenied() {
             No tienes permisos para acceder al sistema. Por favor contacta al administrador.
           </p>
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="mt-6 w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
           >
             Cerrar Sesión
@@ -50,7 +56,7 @@ export default function AuthCallback() {
       try {
         if (loadingRef.current) return;
         loadingRef.current = true;
-        
+
         // Extract callback parameters from URL
         const code = searchParams.get("code");
         const state = searchParams.get("state");
@@ -59,7 +65,6 @@ export default function AuthCallback() {
 
         // Handle OAuth errors
         if (error) {
-          console.error("OAuth error:", error, errorDescription);
           toast.error({
             text: "Error de autenticación",
             description: errorDescription || error,
@@ -128,6 +133,8 @@ export default function AuthCallback() {
         } else if (callbackResponse.statusCode === 401) {
           // Handle access denied (401 Unauthorized)
           setShowAccessDenied(true);
+          // Clean URL to remove query parameters
+          window.history.replaceState({}, document.title, window.location.pathname);
         } else {
           throw new Error("Error en la autenticación");
         }

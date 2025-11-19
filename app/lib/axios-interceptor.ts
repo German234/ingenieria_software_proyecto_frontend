@@ -70,7 +70,7 @@ export const setupAxiosInterceptor = () => {
           case 401:
             toast.error({
               text: "No autorizado",
-              description: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.",
+              description: "Acceso no autorizado al sistema.",
             });
             break;
           case 403:
