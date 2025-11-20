@@ -2,11 +2,11 @@
 
 import Sidenav from "../components/Dashboard/Sidenav";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Loading } from "../components/Loading";
 import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
-import { useSession } from "next-auth/react";
 import UpdateRequiredForm from "../components/Auth/UpdateRequiredForm";
+import { useAuth } from "../hooks/useAuth";
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -14,31 +14,25 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
     const router = useRouter();
-    const [isChecking, setIsChecking] = useState(true);
-    const { status, data: session } = useSession();
-
-    const user = session?.info;
+    const { status, user, loading } = useAuth();
 
     useEffect(() => {
         if (status === "unauthenticated") {
             router.push('/');
-        } else if (status === "authenticated") {
-            setIsChecking(false);
         }
     }, [status, router]);
 
-    if (status === "loading" || isChecking) {
+    if (loading || status === "loading") {
         return <Loading />;
     }
 
-    if (isChecking) {
+    if (status === "unauthenticated") {
         return <Loading />;
     }
 
     if (user && user.isActive === false) {
         return <UpdateRequiredForm username={user.nombreCompleto} />
     }
-
 
     return (
         <div className="flex h-screen flex-col md:flex-row md:overflow-hidden">

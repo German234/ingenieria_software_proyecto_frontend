@@ -151,7 +151,7 @@ El componente requiere que el usuario esté autenticado para:
 - Crear comentarios (requiere sesión)
 - Eliminar comentarios (solo el autor)
 
-Usa `next-auth` para verificar la sesión del usuario.
+Usa el sistema de autenticación personalizado para verificar la sesión del usuario.
 
 ## 🎯 Personalización
 
@@ -186,7 +186,6 @@ Puedes personalizar:
 ## 📚 Dependencias
 
 - `next`: ^15.3.3
-- `next-auth`: ^4.24.11
 - `lucide-react`: ^0.513.0
 - `@pheralb/toast`: ^1.0.0
 - `axios`: ^1.9.0

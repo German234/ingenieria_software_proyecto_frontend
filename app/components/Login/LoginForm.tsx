@@ -8,11 +8,11 @@ import { toast } from "@pheralb/toast";
 import {
   useGoogleReCaptcha
 } from 'react-google-recaptcha-v3';
-import { signIn, useSession } from "next-auth/react";
 import ForgotPasswordModal from "../Popups/ForgotPasswordModal";
 import { Eye, EyeClosed } from "lucide-react";
 import { RequestPassResponse } from "@/app/types/types";
 import { requestPasswordReset } from "@/app/services/user.service";
+import { useAuth } from "@/app/hooks/useAuth";
 
 const LoginForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,8 +26,7 @@ const LoginForm: React.FC = () => {
 
   const router = useRouter();
   const { executeRecaptcha } = useGoogleReCaptcha();
-  const { status } = useSession();
-
+  const { status, login } = useAuth();
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -42,28 +41,18 @@ const LoginForm: React.FC = () => {
     setLoading(true);
 
     try {
-      const result = await signIn("credentials", {
-        redirect: false,
-        email,
-        password
-      });
-
-      console.log(result)
-
       if (!executeRecaptcha) {
         throw new Error("reCAPTCHA no está disponible.");
       }
 
-      if (result?.error) {
-        throw new Error(result.error);
-      }
-
+      const token = await executeRecaptcha("login");
+      await login(email, password, token);
 
       router.refresh();
       router.push("/dashboard");
 
-    } catch (err) {
-      if (err instanceof Error && err.message === "CredentialsSignin") {
+    } catch (err: any) {
+      if (err.response?.status === 401) {
         toast.error({ text: 'Credenciales invalidas', description: 'Revisa tu correo o contraseña' });
       } else if (err instanceof Error) {
         toast.error({ text: 'Error de inicio de sesión', description: err.message });
