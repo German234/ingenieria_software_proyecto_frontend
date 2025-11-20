@@ -9,7 +9,7 @@ const Table = <T extends { _id: string }>({
   columns,
   onEdit,
   onDelete,
-  handleMove = () => { },
+  handleMove = () => {},
   hasMove = false,
   hasEdit = true,
 }: TableProps<T>) => {
@@ -51,20 +51,45 @@ const Table = <T extends { _id: string }>({
                   </td>
                 ))}
                 {(onEdit || onDelete) && (
-                  <td className="py-4 px-6 text-center space-x-2">
-                    <div className="flex flex-row gap-4 justify-center">
+                  <td className="py-4 px-6 text-center">
+                    <div className="flex flex-row gap-3 justify-center">
                       {hasEdit && onEdit && (
                         <button
-                          className="flex items-center justify-center w-8 h-8 text-blue-500 hover:text-blue-700 focus:outline-none"
+                          type="button"
+                          className="
+                            flex items-center justify-center
+                            w-10 h-10
+                            bg-white border border-[#003C71]/30
+                            text-[#003C71]
+                            rounded-xl shadow-sm
+                            hover:bg-[#003C71]
+                            hover:text-white
+                            hover:shadow
+                            transition-all
+                            focus:outline-none
+                          "
                           onClick={() => onEdit(row)}
                           aria-label="Editar"
                         >
                           <Edit2 size={20} />
                         </button>
                       )}
+
                       {onDelete && (
                         <button
-                          className="flex items-center justify-center w-8 h-8 text-red-500 hover:text-red-700 focus:outline-none"
+                          type="button"
+                          className="
+                            flex items-center justify-center
+                            w-10 h-10
+                            bg-white border border-red-400/40
+                            text-red-600
+                            rounded-xl shadow-sm
+                            hover:bg-red-600
+                            hover:text-white
+                            hover:shadow
+                            transition-all
+                            focus:outline-none
+                          "
                           onClick={() => onDelete(row._id)}
                           aria-label="Eliminar"
                         >
@@ -74,11 +99,23 @@ const Table = <T extends { _id: string }>({
 
                       {hasMove && (
                         <button
-                          className="flex items-center justify-center w-8 h-8 text-yellow-500 hover:text-yellow-700 focus:outline-none"
+                          type="button"
+                          className="
+                            flex items-center justify-center
+                            w-10 h-10
+                            bg-white border border-yellow-400/40
+                            text-yellow-600
+                            rounded-xl shadow-sm
+                            hover:bg-yellow-500
+                            hover:text-white
+                            hover:shadow
+                            transition-all
+                            focus:outline-none
+                          "
                           onClick={() => handleMove(row)}
                           aria-label="Mover"
                         >
-                          <Repeat2Icon size={22} />
+                          <Repeat2Icon size={20} />
                         </button>
                       )}
                     </div>
