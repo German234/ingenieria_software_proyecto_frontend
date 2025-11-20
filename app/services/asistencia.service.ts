@@ -106,7 +106,7 @@ export const getAsistenciaByCourseId = async (
     encargados,
   };
 };
-
+/*
 export const updateAsistenciaById = async (
   asistencia: Partial<Asistencia>
 ): Promise<Asistencia> => {
@@ -123,6 +123,22 @@ export const updateAsistenciaById = async (
   
   return response.data;
 };
+*/
+export const updateAsistenciaById = async (
+  asistencia: {
+    seccionId: string;
+    asistencias: {
+      userXWorkGroupId: string;
+      fecha: string;
+      estado: string;
+    }[];
+  }
+): Promise<Asistencia> => {
+  console.log("Payload /attendance:", asistencia);
+  const response = await api.post(`/attendance`, asistencia);
+  return response.data;
+};
+
 
 export const getAsistenciaByDateAlumnos = async (
   id_section: string | undefined,
