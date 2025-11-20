@@ -9,6 +9,7 @@ interface AsistenciaCardProps {
     localAsistencia: Asistencia;
     alumno: {
         _id: string;
+        userXWorkgroupId?: string;
         nombre: string;
         image: string;
         email: string;
@@ -24,6 +25,26 @@ interface AsistenciaCardProps {
     ) => void;
 }
 
+type EstadoAsistencia = "asistio" | "falto" | "permiso";
+
+// 🔹 Normaliza lo que venga del backend a nuestro union
+const normalizeEstado = (
+    estado?: string | null
+): EstadoAsistencia | null => {
+    if (!estado) return null;
+
+    const clean = estado
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, ""); // quita tildes
+
+    if (clean === "asistio") return "asistio";
+    if (clean === "falto") return "falto";
+    if (clean === "permiso") return "permiso";
+
+    return null;
+};
+
 export default function AsistenciaCard({
     localAsistencia,
     alumno,
@@ -34,8 +55,9 @@ export default function AsistenciaCard({
     let asistencia;
 
     if (isAlumno) {
+        const key = alumno.userXWorkgroupId ?? alumno._id; // fallback por si acaso
         asistencia = localAsistencia.alumnos.find(
-            (a) => a.userXWorkGroupId === alumno._id
+            (a) => a.userXWorkGroupId === key
         );
     } else {
         asistencia = localAsistencia.encargados.find(
@@ -43,41 +65,33 @@ export default function AsistenciaCard({
         );
     }
 
-    const normalizeEstado = (estado?: string | null) => {
-        if (!estado) return null;
 
-        const clean = estado.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-        if (clean === "asistio") return "asistio";
-        if (clean === "falto") return "falto";
-        if (clean === "permiso") return "permiso";
-
-        return null;
-    };
-
-    // 🔹 Estado local para saber qué botón está seleccionado visualmente
+    // 🔹 Estado local para saber qué botón está seleccionado
     const [selectedEstado, setSelectedEstado] = useState<
-        "asistio" | "falto" | "permiso" | null
-    >(() => normalizeEstado(asistencia?.estado));
+        EstadoAsistencia | null
+    >(normalizeEstado(asistencia?.estado));
 
-    // 🔹 Si cambia la asistencia desde fuera (por refetch, etc.), sincronizar
+    // 🔹 Si cambia la asistencia desde el backend (por refetch), sincronizamos
     useEffect(() => {
         setSelectedEstado(normalizeEstado(asistencia?.estado));
     }, [asistencia?.estado]);
 
+    const handleClickEstado = (estado: EstadoAsistencia) => {
+  setSelectedEstado(estado); // feedback visual inmediato
 
-    const handleClickEstado = (
-        estado: "asistio" | "falto" | "permiso"
-    ) => {
-        setSelectedEstado(estado); // feedback visual inmediato
-        handleEstadoAsistencia?.(alumno._id, estado); // avisar al padre
-    };
+  // Usar el id de la relación userXWorkgroup si existe,
+  // porque ese es el que se guarda como userXWorkGroupId
+  const idForAttendance = alumno.userXWorkgroupId ?? alumno._id;
+
+  handleEstadoAsistencia?.(idForAttendance, estado); // avisar al padre
+};
+
 
     return (
         <div>
             <div
                 key={alumno._id}
-                className="flex sm:flex-row flex-col items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100"
+                className="flex sm:flex-row flex-col  items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100"
             >
                 <div className="flex flex-row items-center gap-4 flex-1">
                     {alumno.image ? (
@@ -94,7 +108,6 @@ export default function AsistenciaCard({
                             <CircleUser className="w-8 h-8 text-[#003C71]" />
                         </div>
                     )}
-
                     <div className="flex flex-row justify-end items-end gap-2">
                         <div className="max-w-[150px] sm:max-w-[200px]">
                             <p className="font-medium text-gray-900">{alumno.nombre}</p>
@@ -102,7 +115,6 @@ export default function AsistenciaCard({
                                 {alumno.email}
                             </p>
                         </div>
-
                         {asistencia ? (
                             <span
                                 className={`inline-block mt-1 px-2 py-1 rounded text-sm ${getEstadoColor(
