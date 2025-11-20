@@ -14,7 +14,6 @@ import { uploadImage } from "@/app/services/images.service";
 import { activeProfile } from "@/app/services/user.service";
 import { useCamera } from "@/app/hooks/useCamera";
 import { toast } from "@pheralb/toast";
-import { signOut } from "next-auth/react";
 
 
 interface UpdateRequiredFormProps {
@@ -30,7 +29,10 @@ const UpdateRequiredForm: React.FC<UpdateRequiredFormProps> = ({ username }) => 
     const [isMobile, setIsMobile] = useState<boolean>(false);
     const [activationStatus, setActivationStatus] = useState<"idle" | "success" | "error">("idle");
     const queryClient = useQueryClient();
-    const handleLogout = () => signOut({ callbackUrl: '/' });
+    // TODO: Replace with your own logout implementation
+    const handleLogout = () => {
+        console.log("Logout called - implement your own logout logic");
+    };
 
     
     

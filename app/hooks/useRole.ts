@@ -1,20 +1,25 @@
 "use client";
 
 import { RoleValues, ROLES } from "@/app/constants/roles";
-import { useSession } from "next-auth/react";
+import { useAuth } from "./useAuth";
 
+// This hook provides role-based access control functionality
 export const useRole = () => {
-  const { data: session } = useSession();
-
+  const { user, authenticated } = useAuth();
+  
   const hasRole = (allowedRoles: RoleValues[]) => {
-    return allowedRoles.includes(session?.info?.role as RoleValues);
+    if (!authenticated || !user) {
+      return false;
+    }
+    
+    return allowedRoles.includes(user.role as RoleValues);
   };
 
-  const isAdmin = session?.info?.role === ROLES.ADMIN;
-  const isRecomendador = session?.info?.role === ROLES.RECOMENDADOR;
-  const isAlumno = session?.info?.role === ROLES.ALUMNO;
-  const isTutor = session?.info?.role === ROLES.TUTOR;
-  const isProfesor = session?.info?.role === ROLES.PROFESOR;
+  const isAdmin = user?.role === ROLES.ADMIN;
+  const isRecomendador = user?.role === ROLES.RECOMENDADOR;
+  const isAlumno = user?.role === ROLES.ALUMNO;
+  const isTutor = user?.role === ROLES.TUTOR;
+  const isProfesor = user?.role === ROLES.PROFESOR;
 
   return {
     hasRole,
@@ -23,6 +28,6 @@ export const useRole = () => {
     isAlumno,
     isTutor,
     isProfesor,
-    role: session?.info?.role,
+    role: user?.role || null,
   };
 };

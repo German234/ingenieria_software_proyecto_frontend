@@ -1,5 +1,6 @@
 import { api } from "./api";
 import { toast } from "@pheralb/toast";
+import Cookies from "js-cookie";
 
 let isInterceptorSetup = false;
 
@@ -10,13 +11,20 @@ export const setupAxiosInterceptor = () => {
   api.interceptors.request.use(
     async (config) => {
       try {
-        const { getSession } = await import("next-auth/react");
-        const session = await getSession();
-
-        console.log("Session data:", session);
+        // First try to get the access_token cookie (set by the backend)
+        let token = Cookies.get("access_token");
         
-        if (session?.token) {
-          config.headers.Authorization = `Bearer ${session.token}`;
+        // If not found, fall back to our auth_session cookie
+        if (!token) {
+          const sessionData = Cookies.get("auth_session");
+          if (sessionData) {
+            const session = JSON.parse(sessionData);
+            token = session?.token;
+          }
+        }
+        
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
         }
       } catch (error) {
         console.error("Interceptor error (client-side only):", error);
@@ -62,7 +70,7 @@ export const setupAxiosInterceptor = () => {
           case 401:
             toast.error({
               text: "No autorizado",
-              description: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.",
+              description: "Acceso no autorizado al sistema.",
             });
             break;
           case 403:

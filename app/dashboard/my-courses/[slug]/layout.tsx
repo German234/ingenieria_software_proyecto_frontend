@@ -9,10 +9,9 @@ import { Loading } from '@/app/components/Loading';
 import { useQuery } from '@tanstack/react-query';
 import { CourseContext } from '@/app/contexts/course-context';
 import { ROLES } from "@/app/constants/roles";
-import { useSession } from 'next-auth/react';
 
 
-//Este contexto se ha creado para poder compartir los datos del curso por las diferentes tabs y 
+//Este contexto se ha creado para poder compartir los datos del curso por las diferentes tabs y
 // asi no tener que hacer peticiones a la API en cada tab.
 
 export default function CourseLayout({ children }: { children: React.ReactNode }) {
@@ -20,7 +19,8 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
   const { slug } = useParams();
 
   const pathname = usePathname();
-  const { data: session } = useSession();
+  // TODO: Replace with your own authentication context
+  const session = null as any; // Placeholder - replace with your auth context
 
   const {
     data: course,
