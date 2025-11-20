@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useCallback,
   useRef,
-  useMemo,                // 👈 NUEVO
+  useMemo,
 } from "react";
 import { CourseContext } from "@/app/contexts/course-context";
 import type { Asistencia, AsistenciaEncargado } from "@/app/types/types";
@@ -253,6 +253,8 @@ export default function Asistencia() {
     );
   }, [course.alumnos, search]);
 
+  const currentDateIso = new Date().toISOString().split("T")[0];
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center mb-8">
@@ -278,6 +280,15 @@ export default function Asistencia() {
         onChange={setSearch}
         placeholder="Buscar estudiante por nombre o correo..."
       />
+
+      <p className="text-xl font-semibold text-[#003C71]">
+        {new Date(currentDateIso).toLocaleDateString("es-ES", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }).replace(/^\w/, (c) => c.toUpperCase())}
+      </p>
 
       <div className="space-y-4">
         {filteredAlumnos.map((alumno) => (
