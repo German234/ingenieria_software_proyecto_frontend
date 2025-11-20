@@ -7,7 +7,7 @@ export const getAlumnos = async (): Promise<Estudiante[]> => {
     "/user-x-work-groups/alumnos"
   );
   console.log("Datos obtenidos:", response);
-  return response.data.data;
+  return response.data.data.usuarios || [];
 };
 
 export const deleteAlumno = async (id: string): Promise<void> => {

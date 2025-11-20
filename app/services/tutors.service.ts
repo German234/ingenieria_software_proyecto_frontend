@@ -4,7 +4,7 @@ import { Tutor, TutorResponse } from '@/app/types/types'
 
 export const getTutors = async (): Promise<Tutor[]> => {
   const response = await api.get<TutorResponse>('/user-x-work-groups/tutores');
-  return response.data.data;
+  return response.data.data.usuarios || [];
 };
 
 export const addTutor = async (tutor: Tutor): Promise<Partial<Tutor>> => {

@@ -35,6 +35,7 @@ import { AddCourseModal as EditCourseModal } from "@/app/components/Popups/Cours
 
 import { DeleteModal } from "@/app/components/Popups/DeleteModal";
 import { toast } from "@pheralb/toast";
+import { DownloadCoursesReportButton } from "@/app/components/Dashboard/DownloadCoursesReportButton";
 
 type CourseCardProps = {
   course: Course;
@@ -382,7 +383,15 @@ export default function CoursesPage() {
         ]}
       />
 
-      <ListGridLayout isCardView={isCardView} setIsCardView={setIsCardView} />
+      <ListGridLayout 
+        isCardView={isCardView} 
+        setIsCardView={setIsCardView}
+        downloadButton={
+          <DownloadCoursesReportButton
+            buttonLabel="Descargar Reporte"
+          />
+        }
+      />
 
       {isCardView ? (
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

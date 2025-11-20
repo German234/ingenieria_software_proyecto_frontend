@@ -42,7 +42,7 @@ const ExportReportButton: React.FC<ExportReportButtonProps> = ({
     setIsExporting(true);
     try {
       const response = await api.get(endpoint);
-      const users: User[] = response.data.data;
+      const users: User[] = response.data.data.usuarios || [];
 
       if (!users || users.length === 0) {
         toast.error({

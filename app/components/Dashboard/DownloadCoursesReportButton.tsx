@@ -5,29 +5,30 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { api } from "@/app/lib/api";
 import { toast } from "@pheralb/toast";
+import { useRole } from "@/app/hooks/useRole";
 
-interface User {
+interface CourseData {
   _id: string;
   nombre: string;
-  email: string;
-  image: string;
-  isActive: boolean;
-  workgroups: string[];
+  slug: string;
+  backgroundImage: string;
+  cantidadAlumnos: number;
+  cantidadTutores: number;
 }
 
-interface DownloadReportButtonProps {
-  endpoint: string;
-  reportTitle: string;
-  fileName: string;
+interface DownloadCoursesReportButtonProps {
   buttonLabel?: string;
 }
 
-export const DownloadReportButton = ({
-  endpoint,
-  reportTitle,
-  fileName,
+export const DownloadCoursesReportButton = ({
   buttonLabel = "Descargar Reporte"
-}: DownloadReportButtonProps) => {
+}: DownloadCoursesReportButtonProps) => {
+  const { isAdmin } = useRole();
+
+  // Solo mostrar el botón a administradores
+  if (!isAdmin) {
+    return null;
+  }
   
   const generatePDF = async () => {
     try {
@@ -35,10 +36,10 @@ export const DownloadReportButton = ({
         text: "Generando reporte...",
       });
 
-      const response = await api.get(endpoint);
-      const users: User[] = response.data.data.usuarios || [];
+      const response = await api.get("/user-x-work-groups/courses/summary");
+      const courses: CourseData[] = response.data.data;
 
-      if (!users || users.length === 0) {
+      if (!courses || courses.length === 0) {
         toast.error({
           text: "No hay datos para generar el reporte",
         });
@@ -60,7 +61,7 @@ export const DownloadReportButton = ({
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(22);
       doc.setFont("helvetica", "bold");
-      doc.text(reportTitle, 14, 20);
+      doc.text("Reporte de Cursos", 14, 20);
       
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
@@ -74,22 +75,25 @@ export const DownloadReportButton = ({
       // Información general
       doc.setTextColor(...textColor);
       doc.setFontSize(11);
-      doc.text(`Total de registros: ${users.length}`, 14, 50);
-      doc.text(`Activos: ${users.filter(u => u.isActive).length}`, 14, 57);
-      doc.text(`Inactivos: ${users.filter(u => !u.isActive).length}`, 14, 64);
+      const totalAlumnos = courses.reduce((sum, c) => sum + c.cantidadAlumnos, 0);
+      const totalTutores = courses.reduce((sum, c) => sum + c.cantidadTutores, 0);
+      
+      doc.text(`Total de cursos: ${courses.length}`, 14, 50);
+      doc.text(`Total de alumnos: ${totalAlumnos}`, 14, 57);
+      doc.text(`Total de tutores: ${totalTutores}`, 14, 64);
 
       // Preparar datos para la tabla
-      const tableData = users.map((user, index) => [
+      const tableData = courses.map((course, index) => [
         (index + 1).toString(),
-        user.nombre,
-        user.email,
-        user.isActive ? "Activo" : "Inactivo",
-        user.workgroups.join(", ") || "Sin asignar",
+        course.nombre,
+        course.cantidadAlumnos.toString(),
+        course.cantidadTutores.toString(),
+        (course.cantidadAlumnos + course.cantidadTutores).toString(),
       ]);
 
       // Generar tabla
       autoTable(doc, {
-        head: [["#", "Nombre", "Email", "Estado", "Work Groups"]],
+        head: [["#", "Nombre del Curso", "Alumnos", "Tutores", "Total Usuarios"]],
         body: tableData,
         startY: 75,
         theme: "grid",
@@ -109,10 +113,10 @@ export const DownloadReportButton = ({
         },
         columnStyles: {
           0: { cellWidth: 10, halign: "center" },
-          1: { cellWidth: 40 },
-          2: { cellWidth: 50 },
-          3: { cellWidth: 25, halign: "center" },
-          4: { cellWidth: 55 },
+          1: { cellWidth: 80 },
+          2: { cellWidth: 30, halign: "center" },
+          3: { cellWidth: 30, halign: "center" },
+          4: { cellWidth: 40, halign: "center" },
         },
         margin: { top: 75, left: 14, right: 14 },
         didDrawPage: (data) => {
@@ -132,7 +136,7 @@ export const DownloadReportButton = ({
       });
 
       // Guardar PDF
-      doc.save(`${fileName}_${new Date().getTime()}.pdf`);
+      doc.save(`reporte_cursos_${new Date().getTime()}.pdf`);
       
       toast.success({
         text: "Reporte generado exitosamente",
