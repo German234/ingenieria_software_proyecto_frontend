@@ -57,3 +57,12 @@ export const getMySections = async (): Promise<Course[]> => {
   const data = response.data.data;
   return Array.isArray(data) ? data : [data];
 };
+
+export const deleteCourse = async (id: string): Promise<void> => {
+  try {
+    await api.delete(`/work-groups/${id}`);
+  } catch (error) {
+    console.error("Error deleting course:", error);
+    throw error;
+  }
+};
