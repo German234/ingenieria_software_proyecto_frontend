@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useCallback,
   useRef,
-  useMemo,
+  useMemo,                // 👈 NUEVO
 } from "react";
 import { CourseContext } from "@/app/contexts/course-context";
 import type { Asistencia, AsistenciaEncargado } from "@/app/types/types";
@@ -25,8 +25,6 @@ import { getLocalTimeZone, today } from "@internationalized/date";
 type EstadoAsistencia = "asistio" | "falto" | "permiso";
 
 const getCurrentDateString = today(getLocalTimeZone());
-// Fecha en formato YYYY-MM-DD, alineada con lo que devuelve/espera el backend
-const currentDateIso = new Date().toISOString().split("T")[0];
 
 export default function Asistencia() {
   const course = useContext(CourseContext);
@@ -84,17 +82,15 @@ export default function Asistencia() {
 
   useEffect(() => {
     if (asistenciaResponse) {
-      const todayStr = currentDateIso; // misma lógica que backend
-
       const todayAsistencias = {
         ...asistenciaResponse,
         alumnos: asistenciaResponse.alumnos.filter(
           (alumno: { fecha: string }) =>
-            alumno.fecha.split("T")[0] === todayStr
+            alumno.fecha.split("T")[0] == getCurrentDateString.toString()
         ),
         encargados: asistenciaResponse.encargados.filter(
           (encargado: { fecha: string }) =>
-            encargado.fecha.split("T")[0] === todayStr
+            encargado.fecha.split("T")[0] == getCurrentDateString.toString()
         ),
       };
 
@@ -164,25 +160,17 @@ export default function Asistencia() {
   };
 
   const handleEstadoAsistencia = useCallback(
-    (alumnoKey: string, estado: EstadoAsistencia) => {
+    (alumnoId: string, estado: EstadoAsistencia) => {
       setLocalAsistencia((prev) => {
-        // alumnoKey es userXWorkgroupId (o _id si no existe)
-        const alumno = course?.alumnos.find(
-          (a) =>
-            a.userXWorkgroupId === alumnoKey || a._id === alumnoKey
-        );
-
+        const alumno = course?.alumnos.find((a) => a._id === alumnoId);
         if (!alumno) return prev;
 
-        const userXWorkGroupId = alumno.userXWorkgroupId ?? alumnoKey;
-
         const existingIndex = prev.alumnos.findIndex(
-          (a) => a.userXWorkGroupId === userXWorkGroupId
+          (a) => a.userXWorkGroupId === alumnoId
         );
-
         const newAsistencia = {
-          userXWorkGroupId,
-          fecha: currentDateIso, // misma fecha que usamos para filtrar
+          userXWorkGroupId: alumno.userXWorkgroupId,
+          fecha: new Date().toISOString().split("T")[0],
           estado,
           nombre: alumno.nombre,
           imagen: alumno.image,
@@ -218,12 +206,9 @@ export default function Asistencia() {
           estado,
         })
       ),
-      
     };
 
-    console.log("PAYLOAD FINALPROMISE", payload);
     const finalPromise = updateAsistenciaByIdMutation.mutateAsync(payload);
-    
 
     toast.loading({
       text: "Actualizando asistencia...",
@@ -293,15 +278,6 @@ export default function Asistencia() {
         onChange={setSearch}
         placeholder="Buscar estudiante por nombre o correo..."
       />
-
-      <p className="text-xl font-semibold text-[#003C71]">
-        {new Date(currentDateIso).toLocaleDateString("es-ES", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }).replace(/^\w/, (c) => c.toUpperCase())}
-      </p>
 
       <div className="space-y-4">
         {filteredAlumnos.map((alumno) => (
