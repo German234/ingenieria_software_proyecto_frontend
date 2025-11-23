@@ -9,7 +9,6 @@ import {
 } from "@/app/services/comments.service";
 import CommentItem from "./CommentItem";
 import { MessageSquare, Send, Loader2, ChevronDown } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { toast } from "@pheralb/toast";
 import axios from "axios";
 
@@ -20,7 +19,8 @@ interface CommentsSectionProps {
 export default function CommentsSection({
   supportMaterialId,
 }: CommentsSectionProps) {
-  const { data: session } = useSession();
+  // TODO: Replace with your own authentication context
+  const session = null as any; // Placeholder - replace with your auth context
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [newComment, setNewComment] = useState("");

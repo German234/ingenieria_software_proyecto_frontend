@@ -3,7 +3,6 @@
 import { ReactNode } from 'react';
 import { useRole } from '@/app/hooks/useRole';
 import { RoleValues } from '@/app/constants/roles';
-import { useSession } from 'next-auth/react';
 
 interface RoleGuardProps {
   allowedRoles: RoleValues[];
@@ -21,13 +20,15 @@ export const RoleGuard = ({
   mode = 'any'
 }: RoleGuardProps) => {
   const { hasRole, } = useRole();
-  const { status } = useSession(); 
+  
+  // TODO: Replace with your own authentication state
+  const status = "unauthenticated" as "loading" | "authenticated" | "unauthenticated"; // Placeholder
 
   if (status === 'loading') {
     return <>{loadingFallback}</>;
   }
 
-  const hasPermission = mode === 'any' 
+  const hasPermission = mode === 'any'
     ? allowedRoles.some(r => hasRole([r]))
     : allowedRoles.every(r => hasRole([r]));
 

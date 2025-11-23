@@ -14,6 +14,7 @@ import { toast } from "@pheralb/toast";
 import Image from "next/image";
 import { Plus } from "lucide-react";
 import { FormModalEstudiante } from "@/app/components/Popups/AddAlumnoModal";
+import { DownloadReportButton } from "@/app/components/Dashboard/DownloadReportButton";
 
 export default function Page() {
     const [isCardView, setIsCardView] = useState(false);
@@ -137,12 +138,22 @@ export default function Page() {
                 ]}
             />
 
-
-            <ListGridLayout isCardView={isCardView} setIsCardView={setIsCardView} />
+            <ListGridLayout 
+                isCardView={isCardView} 
+                setIsCardView={setIsCardView}
+                downloadButton={
+                    <DownloadReportButton
+                        endpoint="/user-x-work-groups/alumnos"
+                        reportTitle="Reporte de Alumnos"
+                        fileName="reporte_alumnos"
+                        buttonLabel="Descargar Reporte"
+                    />
+                }
+            />
             {
                 isCardView ? (
                     <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {alumnos?.map((alumno) => (
+                        {alumnos?.map((alumno: Estudiante) => (
                             <CardStudent
                                 key={alumno._id}
                                 alumno={alumno}
@@ -160,7 +171,7 @@ export default function Page() {
                                 hasMove={false}
                                 handleMove={(row) => setModalState({ type: 'edit', selected: row })}
                                 onDelete={(id) => {
-                                    const selected = alumnos?.find(r => r._id === id);
+                                    const selected = alumnos?.find((r: Estudiante) => r._id === id);
                                     if (selected) {
                                         setModalState({ type: 'delete', selected });
                                     }

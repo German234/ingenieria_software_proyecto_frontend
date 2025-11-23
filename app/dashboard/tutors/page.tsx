@@ -14,6 +14,7 @@ import { addTutor, deleteTutor, getTutors } from "@/app/services/tutors.service"
 import CardTutor from "@/app/components/CardViews/CardTutor";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { FormModalTutor } from "@/app/components/Popups/AddTutorModal";
+import { DownloadReportButton } from "@/app/components/Dashboard/DownloadReportButton";
 
 
 const ContactInfo = ({ email }: { email: string }) => (
@@ -146,7 +147,18 @@ export default function TutorPage() {
                 ]}
             />
 
-            <ListGridLayout isCardView={isCardView} setIsCardView={setIsCardView} />
+            <ListGridLayout 
+                isCardView={isCardView} 
+                setIsCardView={setIsCardView}
+                downloadButton={
+                    <DownloadReportButton
+                        endpoint="/user-x-work-groups/tutores"
+                        reportTitle="Reporte de Tutores"
+                        fileName="reporte_tutores"
+                        buttonLabel="Descargar Reporte"
+                    />
+                }
+            />
 
             {isCardView ? (
                 <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

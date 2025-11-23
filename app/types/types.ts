@@ -4,7 +4,7 @@ export interface RequestPassResponse {
 }
 
 export interface UserInfo {
-  userId: string;
+  id: string;
   nombreCompleto: string;
   email: string;
   image: string;
@@ -15,10 +15,20 @@ export interface UserInfo {
 export interface AuthResponse {
   statusCode: number;
   message: string;
-  data: {
+  data?: {
     token: string;
     info: UserInfo;
   };
+}
+
+export interface CallbackResponse {
+  data?: string;
+  userInfo?: UserInfo;
+  accessToken?: string;
+  token?: string;
+  refreshToken?: string;
+  expiresIn?: number;
+  statusCode?: number;
 }
 
 export interface ActivateAccountRequirements {
@@ -313,4 +323,44 @@ export interface CreateCommentDto {
 export interface DeleteCommentResponse {
   statusCode: number;
   message: string;
+}
+
+// Keycloak OAuth/OIDC types
+export interface KeycloakTokenResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  refresh_token: string;
+  refresh_expires_in: number;
+  id_token: string;
+  session_state?: string;
+  scope?: string;
+}
+
+export interface KeycloakUserInfo {
+  sub: string;
+  email_verified: boolean;
+  name?: string;
+  preferred_username?: string;
+  given_name?: string;
+  family_name?: string;
+  email?: string;
+  picture?: string;
+  roles?: string[];
+}
+
+export interface KeycloakCallbackParams {
+  code?: string;
+  state?: string;
+  session_state?: string;
+  error?: string;
+  error_description?: string;
+}
+
+export interface KeycloakConfig {
+  clientId: string;
+  clientSecret: string;
+  realm: string;
+  serverUrl: string;
+  redirectUri: string;
 }
