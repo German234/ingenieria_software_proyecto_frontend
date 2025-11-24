@@ -364,3 +364,36 @@ export interface KeycloakConfig {
   serverUrl: string;
   redirectUri: string;
 }
+
+// Statistics interfaces
+export interface UserStatisticsParams {
+  lastActivityFromDate?: string;
+  lastActivityToDate?: string;
+}
+
+export interface UserStatistics {
+  totalUsers: number;
+  activeUsers: number;
+  inactiveUsers: number;
+  newUsersThisMonth?: number;
+  usersByRole?: {
+    role: string;
+    count: number;
+  }[];
+}
+
+export interface CourseStatistics {
+  totalCourses: number;
+  activeCourses: number;
+  coursesByStatus?: {
+    status: string;
+    count: number;
+  }[];
+  averageStudentsPerCourse?: number;
+  totalEnrollments?: number;
+}
+
+export interface DashboardStatistics {
+  userStats: UserStatistics;
+  courseStats: CourseStatistics;
+}
