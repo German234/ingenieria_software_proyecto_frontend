@@ -23,12 +23,12 @@ export const FormModalEstudiante = ({
     const emptyForm = useMemo<Partial<Estudiante>>(() => ({
         name: "",
         email: "",
-        password: "",
+        password: "Hola1234!",
     }), []);
 
     // Estado del formulario y de la contraseña generada
     const [formData, setFormData] = useState<Partial<Estudiante>>(emptyForm);
-    const [password, setPassword] = useState<string>("");
+    const [password, setPassword] = useState<string>("Hola1234!");
 
     // Sincronizar con initialData
     useEffect(() => {
@@ -100,7 +100,7 @@ export const FormModalEstudiante = ({
                     isRequired={true}
                 />
 
-                <div className="flex items-end gap-4">
+                {/* <div className="flex items-end gap-4">
                     <button
                         type="button"
                         onClick={generatePassword}
@@ -112,11 +112,11 @@ export const FormModalEstudiante = ({
                         label="Contraseña"
                         type="text"
                         value={password}
-                        onChange={() => { /* Sólo lectura */ }}
+                        onChange={() => {  }}
                         placeholder="Aquí se mostrará la contraseña"
                         isRequired={false}
                     />
-                </div>
+                </div> */}
             </form>
         </Modal>
     );
