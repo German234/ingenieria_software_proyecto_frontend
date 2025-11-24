@@ -14,6 +14,7 @@ import { uploadImage } from "@/app/services/images.service";
 import { activeProfile } from "@/app/services/user.service";
 import { useCamera } from "@/app/hooks/useCamera";
 import { toast } from "@pheralb/toast";
+import { useAuth } from "@/app/hooks/useAuth";
 
 
 interface UpdateRequiredFormProps {
@@ -22,6 +23,7 @@ interface UpdateRequiredFormProps {
 
 const UpdateRequiredForm: React.FC<UpdateRequiredFormProps> = ({ username }) => {
     const [step, setStep] = useState(1);
+    const { logout } = useAuth();
     const [preview, setPreview] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState(0);
@@ -29,13 +31,13 @@ const UpdateRequiredForm: React.FC<UpdateRequiredFormProps> = ({ username }) => 
     const [isMobile, setIsMobile] = useState<boolean>(false);
     const [activationStatus, setActivationStatus] = useState<"idle" | "success" | "error">("idle");
     const queryClient = useQueryClient();
-    // TODO: Replace with your own logout implementation
+
     const handleLogout = () => {
-        console.log("Logout called - implement your own logout logic");
+        logout();
     };
 
-    
-    
+
+
 
     const formData = useRef({
         imagen: "",
@@ -52,7 +54,7 @@ const UpdateRequiredForm: React.FC<UpdateRequiredFormProps> = ({ username }) => 
 
     const { cameraActive, startCamera, stopCamera, videoRef, canvasRef, handleTakePhoto, handleFileChange, handleRetakePhoto } = useCamera(isMobile, setPreview, formData, fileInputRef);
 
-    
+
     useEffect(() => {
         formData.current.password = password;
     }, [password]);
