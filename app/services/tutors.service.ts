@@ -8,7 +8,7 @@ export const getTutors = async (): Promise<Tutor[]> => {
 };
 
 export const addTutor = async (tutor: Tutor): Promise<Partial<Tutor>> => {
-  tutor.imageDocumentId = "c745d3cb-ab8b-49eb-bcda-70059b1d2d61";
+  tutor.imageDocumentId = "1d07de6f-223f-45e7-8773-5226bf292c30";
   tutor.roleName = "tutor";
   console.log("Tutor a crear:", tutor);
   const response = await api.post<Partial<Tutor>>("/users", tutor);
