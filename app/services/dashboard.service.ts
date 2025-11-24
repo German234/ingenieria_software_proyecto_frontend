@@ -6,6 +6,23 @@ import {
   UserStatisticsParams
 } from "../types/types";
 
+// Define the actual API response structure
+interface CourseApiResponse {
+  statusCode: number;
+  message: string;
+  data: {
+    totalActiveCourses: number;
+    courses: Array<{
+      _id: string;
+      nombre: string;
+      slug: string;
+      backgroundImage: string;
+      estado: string;
+      cantidadInscripciones: number;
+    }>;
+  };
+}
+
 export interface DashboardMetrics {
   activeUsers: number;
   activeCourses: number;
@@ -26,6 +43,22 @@ export const getDashboardMetrics = async (): Promise<DashboardMetrics> => {
   }
 };
 
+// Define the actual user API response structure
+interface UserApiResponse {
+  statusCode: number;
+  message: string;
+  data: {
+    totalUsers?: number;
+    activeUsers?: number;
+    inactiveUsers?: number;
+    newUsersThisMonth?: number;
+    usersByRole?: Array<{
+      role: string;
+      count: number;
+    }>;
+  };
+}
+
 // Enhanced user statistics with date filtering
 export const getUserStatistics = async (params?: UserStatisticsParams): Promise<UserStatistics> => {
   try {
@@ -43,8 +76,28 @@ export const getUserStatistics = async (params?: UserStatisticsParams): Promise<
       ? `/users/statistics?${queryParams.toString()}`
       : '/users/statistics';
       
-    const response = await api.get<UserStatistics>(url);
-    return response.data;
+    const response = await api.get<UserApiResponse>(url);
+    const data = response.data.data;
+    
+    // Handle the actual response structure from the API
+    if (data && typeof data === 'object') {
+      return {
+        totalUsers: data.totalUsers || 0,
+        activeUsers: data.activeUsers || 0,
+        inactiveUsers: data.inactiveUsers || 0,
+        newUsersThisMonth: data.newUsersThisMonth || 0,
+        usersByRole: data.usersByRole || []
+      };
+    }
+    
+    // Fallback to default values if structure is unexpected
+    return {
+      totalUsers: 0,
+      activeUsers: 0,
+      inactiveUsers: 0,
+      newUsersThisMonth: 0,
+      usersByRole: []
+    };
   } catch (error) {
     console.error("Error fetching user statistics:", error);
     // Return default values if API fails
@@ -61,8 +114,40 @@ export const getUserStatistics = async (params?: UserStatisticsParams): Promise<
 // Course statistics endpoint
 export const getCourseStatistics = async (): Promise<CourseStatistics> => {
   try {
-    const response = await api.get<CourseStatistics>("/user-x-work-groups/courses/statistics");
-    return response.data;
+    const response = await api.get<CourseApiResponse>("/user-x-work-groups/courses/statistics");
+    const data = response.data.data;
+    
+    // Handle the actual response structure from the API
+    if (data && typeof data === 'object') {
+      // If the API returns totalActiveCourses, map it to activeCourses
+      if ('totalActiveCourses' in data) {
+        return {
+          totalCourses: data.totalActiveCourses || 0,
+          activeCourses: data.totalActiveCourses || 0,
+          coursesByStatus: data.courses?.map((course) => ({
+            status: course.estado,
+            count: course.cantidadInscripciones || 0
+          })) || [],
+          averageStudentsPerCourse: data.courses?.reduce((acc, course) =>
+            acc + (course.cantidadInscripciones || 0), 0) / (data.courses?.length || 1) || 0,
+          totalEnrollments: data.courses?.reduce((acc, course) =>
+            acc + (course.cantidadInscripciones || 0), 0) || 0
+        };
+      }
+      // If the API returns the expected structure directly
+      else if ('activeCourses' in data) {
+        return data as CourseStatistics;
+      }
+    }
+    
+    // Fallback to default values if structure is unexpected
+    return {
+      totalCourses: 0,
+      activeCourses: 0,
+      coursesByStatus: [],
+      averageStudentsPerCourse: 0,
+      totalEnrollments: 0
+    };
   } catch (error) {
     console.error("Error fetching course statistics:", error);
     // Return default values if API fails
