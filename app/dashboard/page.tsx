@@ -1,30 +1,36 @@
 "use client";
 import { Info, Target, Award } from "lucide-react";
+import { DashboardMetricsComponent } from "@/app/components/Dashboard/DashboardMetrics";
 
 export default function Dashboard() {
   return (
     <div className="min-h-screen">
       {/* Hero */}
       <div className="bg-white py-8 px-6 md:px-12">
-        <h1 className="text-3xl font-bold text-center text-[#003C71]">
-          Círculos de Estudio
+        <h1 className="text-3xl font-bold text-center text-blue_principal">
+          Dashboard Principal
         </h1>
         <p className="mt-2 text-center text-gray-500 italic">
-          “Aprender juntos, crecer juntos”
+          Monitoreo del estado general de la plataforma
         </p>
+      </div>
+
+      {/* Metrics Section */}
+      <div className="max-w-7xl mx-auto px-4 md:px-0 mt-8">
+        <DashboardMetricsComponent />
       </div>
 
       {/* Definición, objetivos y prioridad */}
       <div className="max-w-5xl mx-auto px-4 md:px-0 mt-12 space-y-8">
-        <h2 className="text-2xl font-semibold text-[#003C71] text-center">
+        <h2 className="text-2xl font-semibold text-blue_principal text-center">
           Definición, objetivos y prioridad
         </h2>
 
         {/* ¿Qué es? */}
         <div className="bg-white rounded-lg p-6 flex items-start space-x-4">
-          <Info className="w-8 h-8 text-[#003C71] mt-1" />
+          <Info className="w-8 h-8 text-blue_principal mt-1" />
           <div>
-            <h3 className="text-xl font-medium text-[#003C71] mb-2">
+            <h3 className="text-xl font-medium text-blue_principal mb-2">
               ¿Qué es el Servicio Social?
             </h3>
             <p className="text-gray-700 leading-relaxed">
@@ -35,9 +41,9 @@ export default function Dashboard() {
 
         {/* Objetivos */}
         <div className="bg-white rounded-lg p-6 flex items-start space-x-4">
-          <Target className="w-8 h-8 text-[#003C71] mt-1" />
+          <Target className="w-8 h-8 text-blue_principal mt-1" />
           <div>
-            <h3 className="text-xl font-medium text-[#003C71] mb-2">
+            <h3 className="text-xl font-medium text-blue_principal mb-2">
               Objetivos
             </h3>
             <ul className="list-disc list-inside text-gray-700 space-y-1">
@@ -59,9 +65,9 @@ export default function Dashboard() {
 
         {/* Prioridad */}
         <div className="bg-white rounded-lg p-6 flex items-start space-x-4">
-          <Award className="w-8 h-8 text-[#003C71] mt-1" />
+          <Award className="w-8 h-8 text-blue_principal mt-1" />
           <div>
-            <h3 className="text-xl font-medium text-[#003C71] mb-2">
+            <h3 className="text-xl font-medium text-blue_principal mb-2">
               Prioridad
             </h3>
             <ul className="list-disc list-inside text-gray-700 space-y-1">

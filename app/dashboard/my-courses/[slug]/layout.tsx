@@ -9,6 +9,7 @@ import { Loading } from '@/app/components/Loading';
 import { useQuery } from '@tanstack/react-query';
 import { CourseContext } from '@/app/contexts/course-context';
 import { ROLES } from "@/app/constants/roles";
+import useAuth from '@/app/hooks/useAuth';
 
 
 //Este contexto se ha creado para poder compartir los datos del curso por las diferentes tabs y
@@ -19,9 +20,6 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
   const { slug } = useParams();
 
   const pathname = usePathname();
-  // TODO: Replace with your own authentication context
-  const session = null as any; // Placeholder - replace with your auth context
-
   const {
     data: course,
     isLoading,
@@ -32,7 +30,8 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
     queryFn: () => getCourseBySlug(slug as string),
   });
 
-  const user = session?.info;
+  // Obtener usuario desde el contexto de autenticación
+  const { user } = useAuth();
 
   const tabs = [
     { id: 1, name: 'Tablón', href: `/dashboard/my-courses/${slug}` },
