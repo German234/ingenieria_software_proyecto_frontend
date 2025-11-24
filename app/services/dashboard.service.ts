@@ -48,14 +48,19 @@ interface UserApiResponse {
   statusCode: number;
   message: string;
   data: {
-    totalUsers?: number;
-    activeUsers?: number;
-    inactiveUsers?: number;
-    newUsersThisMonth?: number;
-    usersByRole?: Array<{
-      role: string;
-      count: number;
+    totalActiveStudents: number;
+    activeTutors: Array<{
+      id: string;
+      name: string;
+      email: string;
+      [key: string]: unknown;
     }>;
+    totalActiveTutors: number;
+    totalActiveAdministrators: number;
+    filters: {
+      lastActivityFromDate: string | null;
+      lastActivityToDate: string | null;
+    };
   };
 }
 
@@ -81,12 +86,19 @@ export const getUserStatistics = async (params?: UserStatisticsParams): Promise<
     
     // Handle the actual response structure from the API
     if (data && typeof data === 'object') {
+      // Calculate total users by summing all active users
+      const totalActiveUsers = data.totalActiveStudents + data.totalActiveTutors + data.totalActiveAdministrators;
+      
       return {
-        totalUsers: data.totalUsers || 0,
-        activeUsers: data.activeUsers || 0,
-        inactiveUsers: data.inactiveUsers || 0,
-        newUsersThisMonth: data.newUsersThisMonth || 0,
-        usersByRole: data.usersByRole || []
+        totalUsers: totalActiveUsers,
+        activeUsers: totalActiveUsers,
+        inactiveUsers: 0, // API doesn't provide inactive users count
+        newUsersThisMonth: 0, // API doesn't provide new users this month
+        usersByRole: [
+          { role: "students", count: data.totalActiveStudents },
+          { role: "tutors", count: data.totalActiveTutors },
+          { role: "administrators", count: data.totalActiveAdministrators }
+        ]
       };
     }
     
