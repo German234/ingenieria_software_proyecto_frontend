@@ -20,7 +20,9 @@ import { useWarnIfUnsavedChanges } from "@/app/hooks/useWarnIfUnsavedChanges";
 import { FormAsistenciaEncargado } from "@/app/components/Popups/AddEncargadoAsistenciaModal";
 import AsistenciaCard from "@/app/components/Asistencia/AsistenciaCard";
 import { AsistenciaSearchBar } from "@/app/components/Asistencia/AsistenciaSearchBar"; // 👈 NUEVO
-import { getLocalTimeZone, today } from "@internationalized/date";
+import SaturdayDatePicker from "@/app/components/Asistencia/SaturdayDatePicker"; // 👈 NUEVO
+import { getLocalTimeZone, today, CalendarDate } from "@internationalized/date";
+import { calendarDateToISOString } from "@/app/utils/dateUtils"; // 👈 NUEVO
 
 type EstadoAsistencia = "asistio" | "falto" | "permiso";
 
@@ -36,6 +38,9 @@ export default function Asistencia() {
     alumnos: [],
     encargados: [],
   });
+
+  // 👈 NUEVO: Estado para la fecha seleccionada en el selector de sábados
+  const [selectedDate, setSelectedDate] = useState<CalendarDate>(getCurrentDateString);
 
   const [modalState, setModalState] = useState<{
     type: "add" | "edit" | "delete" | null;
@@ -54,6 +59,11 @@ export default function Asistencia() {
 
   // 🔍 estado del buscador
   const [search, setSearch] = useState("");          // 👈 NUEVO
+
+  // 👈 NUEVO: Manejar la selección de fecha en el selector de sábados
+  const handleDateSelect = useCallback((date: CalendarDate) => {
+    setSelectedDate(date);
+  }, []);
 
   useWarnIfUnsavedChanges(hasUnsavedChanges);
 
@@ -82,24 +92,26 @@ export default function Asistencia() {
 
   useEffect(() => {
     if (asistenciaResponse) {
-      const todayAsistencias = {
+      // 👈 MODIFICADO: Usar la fecha seleccionada en lugar de la fecha actual
+      const selectedDateString = calendarDateToISOString(selectedDate);
+      const filteredAsistencias = {
         ...asistenciaResponse,
         alumnos: asistenciaResponse.alumnos.filter(
           (alumno: { fecha: string }) =>
-            alumno.fecha.split("T")[0] == getCurrentDateString.toString()
+            alumno.fecha.split("T")[0] === selectedDateString
         ),
         encargados: asistenciaResponse.encargados.filter(
           (encargado: { fecha: string }) =>
-            encargado.fecha.split("T")[0] == getCurrentDateString.toString()
+            encargado.fecha.split("T")[0] === selectedDateString
         ),
       };
 
-      initialAlumnosRef.current = todayAsistencias.alumnos;
-      initialEncargadosRef.current = todayAsistencias.encargados;
+      initialAlumnosRef.current = filteredAsistencias.alumnos;
+      initialEncargadosRef.current = filteredAsistencias.encargados;
 
-      setLocalAsistencia(todayAsistencias);
+      setLocalAsistencia(filteredAsistencias);
     }
-  }, [asistenciaResponse]);
+  }, [asistenciaResponse, selectedDate]); // 👈 AÑADIDO: selectedDate como dependencia
 
   useEffect(() => {
     const hasChanges =
@@ -168,9 +180,11 @@ export default function Asistencia() {
         const existingIndex = prev.alumnos.findIndex(
           (a) => a.userXWorkGroupId === alumnoId
         );
+        
+        // 👈 MODIFICADO: Usar la fecha seleccionada en lugar de la fecha actual
         const newAsistencia = {
           userXWorkGroupId: alumno.userXWorkgroupId,
-          fecha: new Date().toISOString().split("T")[0],
+          fecha: calendarDateToISOString(selectedDate),
           estado,
           nombre: alumno.nombre,
           imagen: alumno.image,
@@ -190,7 +204,7 @@ export default function Asistencia() {
         };
       });
     },
-    [course]
+    [course, selectedDate] // 👈 AÑADIDO: selectedDate como dependencia
   );
 
   const closeModal = () =>
@@ -253,7 +267,8 @@ export default function Asistencia() {
     );
   }, [course.alumnos, search]);
 
-  const currentDateIso = new Date().toISOString().split("T")[0];
+  // 👈 MODIFICADO: Usar la fecha seleccionada para mostrar en la interfaz
+  const currentDateIso = calendarDateToISOString(selectedDate);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -274,6 +289,16 @@ export default function Asistencia() {
         </div>
       </div>
 
+      {/* 👈 NUEVO: Selector de fechas para sábados */}
+      <div className="mb-6">
+        <SaturdayDatePicker
+          selectedDate={selectedDate}
+          onDateSelect={handleDateSelect}
+          allowFutureDates={false} // No permitir fechas futuras para asistencia
+          allowPastDates={true}   // Permitir fechas pasadas para registro histórico
+        />
+      </div>
+
       {/* 🔍 Barra de búsqueda arriba de las cards */}
       <AsistenciaSearchBar
         value={search}
@@ -281,7 +306,7 @@ export default function Asistencia() {
         placeholder="Buscar estudiante por nombre o correo..."
       />
 
-      <p className="text-xl font-semibold text-[#003C71]">
+      <p className="text-xl font-semibold text-[#003C71] mb-4">
         {new Date(currentDateIso).toLocaleDateString("es-ES", {
           weekday: "long",
           year: "numeric",
@@ -303,7 +328,7 @@ export default function Asistencia() {
 
         {filteredAlumnos.length === 0 && (
           <p className="text-sm text-gray-500">
-            No se encontraron estudiantes que coincidan con “{search}”.
+            No se encontraron estudiantes que coincidan con "{search}".
           </p>
         )}
 
