@@ -253,10 +253,10 @@ export default function Asistencia() {
     });
   };
 
-  if (!course) return <div>Seleccione un curso primero</div>;
-
   // 🔍 Filtrado de alumnos según el término de búsqueda
   const filteredAlumnos = useMemo(() => {
+    if (!course) return [];
+    
     const term = search.trim().toLowerCase();
     if (!term) return course.alumnos;
 
@@ -265,7 +265,9 @@ export default function Asistencia() {
         .toLowerCase()
         .includes(term)
     );
-  }, [course.alumnos, search]);
+  }, [course, search]);
+
+  if (!course) return <div>Seleccione un curso primero</div>;
 
   // 👈 MODIFICADO: Usar la fecha seleccionada para mostrar en la interfaz
   const currentDateIso = calendarDateToISOString(selectedDate);
@@ -328,7 +330,7 @@ export default function Asistencia() {
 
         {filteredAlumnos.length === 0 && (
           <p className="text-sm text-gray-500">
-            No se encontraron estudiantes que coincidan con "{search}".
+            No se encontraron estudiantes que coincidan con {search}.
           </p>
         )}
 

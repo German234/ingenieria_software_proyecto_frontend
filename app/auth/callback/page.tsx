@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "@pheralb/toast";
 import { Loading } from "@/app/components/Loading";
@@ -43,7 +43,7 @@ function AccessDenied() {
 
 const STATE_COOKIE_NAME = "keycloak_state";
 
-export default function AuthCallback() {
+function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { handleTokenExchange, logout } = useAuth();
@@ -171,4 +171,12 @@ export default function AuthCallback() {
 
   // This should not be reached as we redirect in all cases
   return <Loading />;
+}
+
+export default function AuthCallback() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <AuthCallbackContent />
+    </Suspense>
+  );
 }

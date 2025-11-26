@@ -51,8 +51,8 @@ const LoginForm: React.FC = () => {
       router.refresh();
       router.push("/dashboard");
 
-    } catch (err: any) {
-      if (err.response?.status === 401) {
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'status' in err.response && err.response.status === 401) {
         toast.error({ text: 'Credenciales invalidas', description: 'Revisa tu correo o contraseña' });
       } else if (err instanceof Error) {
         toast.error({ text: 'Error de inicio de sesión', description: err.message });

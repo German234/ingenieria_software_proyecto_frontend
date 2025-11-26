@@ -1,6 +1,6 @@
 "use client"
 import useAuth from "@/app/hooks/useAuth";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { toast } from "@pheralb/toast";
 import Cookies from "js-cookie";
 
@@ -9,7 +9,7 @@ const LoginKeycloak: React.FC = () => {
     const [isLoggingIn, setIsLoggingIn] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const handleLogin = async () => {
+    const handleLogin = useCallback(async () => {
         try {
             setIsLoggingIn(true);
             setError(null);
@@ -36,11 +36,11 @@ const LoginKeycloak: React.FC = () => {
         } finally {
             setIsLoggingIn(false);
         }
-    };
+    }, [loginKeycloak]);
 
     useEffect(() => {
         handleLogin();
-    }, []);
+    }, [handleLogin]);
 
     if (error) {
         return (

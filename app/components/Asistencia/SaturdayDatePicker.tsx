@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import { CalendarDate } from "@internationalized/date";
 import {
   getSaturdaysOfMonth,
@@ -88,16 +88,6 @@ export default function SaturdayDatePicker({
     return baseStyles + "bg-white text-gray-700 border-gray-200 hover:bg-gray-50";
   };
 
-  // Obtener el texto del día
-  const getDayText = (date: CalendarDate): string => {
-    const dayNumber = date.day;
-    
-    if (isToday(date)) {
-      return `${dayNumber}\nHOY`;
-    }
-    
-    return dayNumber.toString();
-  };
 
   // Obtener el texto del mes y año para el encabezado
   const getHeaderText = (): string => {

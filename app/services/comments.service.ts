@@ -20,9 +20,9 @@ export const getCommentsBySupportMaterial = async (
     );
     console.log("Comments response:", response.data);
     return response.data.data || [];
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Si es un 404, simplemente retornar array vacío sin mostrar error
-    if (error?.response?.status === 404) {
+    if (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'status' in error.response && error.response.status === 404) {
       console.log("No comments found for this material");
       return [];
     }

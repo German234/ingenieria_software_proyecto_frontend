@@ -27,18 +27,8 @@ export const ImageSelector = ({ initialPreview, onImageChange }: ImageSelectorPr
         setIsDragging(false);
     }, []);
 
-    const handleDrop = useCallback((e: React.DragEvent) => {
-        e.preventDefault();
-        setIsDragging(false);
-
-        const droppedFile = e.dataTransfer.files[0];
-        if (droppedFile?.type.startsWith('image/')) {
-            handleFileSelect(droppedFile);
-        }
-    }, []);
-
     // Manejo de archivos
-    const handleFileSelect = (selectedFile: File) => {
+    const handleFileSelect = useCallback((selectedFile: File) => {
         const reader = new FileReader();
         reader.onload = () => {
             setPreview(reader.result as string);
@@ -48,7 +38,17 @@ export const ImageSelector = ({ initialPreview, onImageChange }: ImageSelectorPr
         };
         reader.readAsDataURL(selectedFile);
         setIsUrlInput(false);
-    };
+    }, [onImageChange]);
+
+    const handleDrop = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(false);
+
+        const droppedFile = e.dataTransfer.files[0];
+        if (droppedFile?.type.startsWith('image/')) {
+            handleFileSelect(droppedFile);
+        }
+    }, [handleFileSelect]);
 
     const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];

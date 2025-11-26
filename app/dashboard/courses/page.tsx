@@ -139,7 +139,6 @@ const columns: Column<Course>[] = [
 
 export default function CoursesPage() {
   const [isCardView, setIsCardView] = useState(true);
-  const [isLoadingEditData, setIsLoadingEditData] = useState(false);
   const queryClient = useQueryClient();
 
   // 🧠 Ahora guardamos también el curso completo (Course)
@@ -250,7 +249,6 @@ export default function CoursesPage() {
 
   const handleOpenEdit = async (row: Course) => {
     try {
-      setIsLoadingEditData(true);
       console.log("➡️ Abriendo edición para:", row);
 
       // Traer el curso COMPLETO por slug (o por id si prefieres)
@@ -269,8 +267,6 @@ export default function CoursesPage() {
         text: "No se pudo cargar la información del curso",
         description: "Intenta nuevamente.",
       });
-    } finally {
-      setIsLoadingEditData(false);
     }
   };
 
@@ -283,7 +279,7 @@ export default function CoursesPage() {
 
     const updateData: CourseAddInterface = {
       // ⚠️ Ajusta estos campos según tu CourseAddInterface real
-      name: (cursoEditar as any).name ?? modalState.selected.nombre,
+      name: (cursoEditar as CourseAddInterface & { name?: string }).name ?? modalState.selected.nombre,
       backgroundImageId: cursoEditar.backgroundImageId,
       userIds: cursoEditar.userIds,
     };
@@ -314,7 +310,7 @@ export default function CoursesPage() {
 
       updateData.backgroundImageId = imageId;
       // 🆕 aquí usamos el _id del curso seleccionado
-      (updateData as any).id = modalState.selected._id;
+      (updateData as CourseAddInterface & { id?: string }).id = modalState.selected._id;
 
       const courseResponse = await updateCourseMutation.mutateAsync(updateData);
       console.log("Curso actualizado:", courseResponse);
@@ -432,7 +428,7 @@ export default function CoursesPage() {
         <CreateCourseModal
           isOpen={modalState.type === "add"}
           title="Agregar curso"
-          initialData={modalState.selected as any}
+          initialData={modalState.selected as unknown as CourseAddInterface}
           onClose={closeModal}
           onSubmit={handleAddCourse}
         />

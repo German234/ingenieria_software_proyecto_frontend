@@ -142,9 +142,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       if (typeof response === 'string') {
         redirectUrl = response;
-      } else if (response && typeof response.data === 'string') {
+      } else if (response && typeof response === 'object' && 'data' in response && typeof response.data === 'string') {
         redirectUrl = response.data;
-      } else if (response && response.data && response.data.url && typeof response.data.url === 'string') {
+      } else if (response && typeof response === 'object' && 'data' in response && response.data && typeof response.data === 'object' && 'url' in response.data && typeof response.data.url === 'string') {
         redirectUrl = response.data.url;
       }
       

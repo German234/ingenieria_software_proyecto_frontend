@@ -20,7 +20,7 @@ export default function CommentsSection({
   supportMaterialId,
 }: CommentsSectionProps) {
   // TODO: Replace with your own authentication context
-  const session = null as any; // Placeholder - replace with your auth context
+  const session = null as { user?: { info?: { nombreCompleto?: string; email?: string } } } | null; // Placeholder - replace with your auth context
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [newComment, setNewComment] = useState("");
@@ -164,7 +164,7 @@ export default function CommentsSection({
             </div>
             <div className="flex justify-between items-center">
               <p className="text-xs text-gray-500">
-                {session.info?.nombreCompleto || 'Usuario'}
+                {session?.user?.info?.nombreCompleto || 'Usuario'}
               </p>
               <button
                 type="submit"
@@ -221,7 +221,7 @@ export default function CommentsSection({
                   <CommentItem
                     comment={comment}
                     onDelete={handleDelete}
-                    currentUserId={session?.info?.email}
+                    currentUserId={session?.user?.info?.email}
                   />
                 </div>
               ))}

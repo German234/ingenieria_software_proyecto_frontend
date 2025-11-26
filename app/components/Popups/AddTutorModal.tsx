@@ -28,28 +28,19 @@ export const FormModalTutor = ({
 
     // Estado del formulario y de la contraseña generada
     const [formData, setFormData] = useState<Partial<Tutor>>(emptyForm);
-    const [password, setPassword] = useState<string>("Hola1234!");
 
     // Sincronizar con initialData
     useEffect(() => {
         setFormData(initialData || emptyForm);
-        setPassword(initialData?.password || "");
     }, [initialData, emptyForm]);
 
     const handleFieldChange = (field: keyof Tutor, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    // Genera contraseña aleatoria de 8 caracteres
-    const generatePassword = () => {
-        const newPassword = Math.random().toString(36).slice(-8);
-        setPassword(newPassword);
-        setFormData(prev => ({ ...prev, password: newPassword }));
-    };
 
     const handleCancel = () => {
         setFormData(emptyForm);
-        setPassword("");
         onClose();
     };
 

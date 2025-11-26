@@ -1,6 +1,6 @@
 import { api } from "../lib/api";
 
-import { Estudiante, GetEstudiantesResponse } from "@/app/types/types";
+import { Estudiante } from "@/app/types/types";
 
 export const getAlumnos = async (): Promise<Estudiante[]> => {
   const response = await api.get<{ data: { usuarios: Estudiante[] } }>(

@@ -82,9 +82,9 @@ export const login = async (
   return response.data;
 };
 
-export const getLogin = async (): Promise<any> => {
+export const getLogin = async (): Promise<unknown> => {
   try {
-    const response = await api.get<any>("/auth/login");
+    const response = await api.get<unknown>("/auth/login");
     return response.data;
   }
   catch (error) {
@@ -226,19 +226,19 @@ export const handleAuthCallback = async (code: string, state?: string): Promise<
     );
 
     return response.data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Handle HTTP errors and extract status code
-    if (error.response) {
+    if (error && typeof error === 'object' && 'response' in error && error.response) {
       return {
-        statusCode: error.response.status,
-        data: error.response.data?.message || "Error en la autenticación",
+        statusCode: typeof error.response === 'object' && error.response && 'status' in error.response ? (error.response.status as number) : 500,
+        data: typeof error.response === 'object' && error.response && 'data' in error.response && error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data ? (error.response.data.message as string) : "Error en la autenticación",
       };
     }
     
     // Handle network errors or other exceptions
     return {
       statusCode: 500,
-      data: error.message || "Error desconocido",
+      data: error instanceof Error ? error.message : "Error desconocido",
     };
   }
 };
