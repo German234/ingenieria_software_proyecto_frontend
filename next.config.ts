@@ -2,11 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ["refuerzo-mendoza.me"],
+    domains: ["capas.fopinet.com"],
+    output: "standalone",
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "refuerzo-mendoza.me",
+        hostname: "capas.fopinet.com",
         port: "",
         pathname: "/apiv2/uploads/images/profile_images/**",
       },
