@@ -11,6 +11,7 @@ import CommentItem from "./CommentItem";
 import { MessageSquare, Send, Loader2, ChevronDown } from "lucide-react";
 import { toast } from "@pheralb/toast";
 import axios from "axios";
+import useAuth from "@/app/hooks/useAuth";
 
 interface CommentsSectionProps {
   supportMaterialId: string;
@@ -19,8 +20,7 @@ interface CommentsSectionProps {
 export default function CommentsSection({
   supportMaterialId,
 }: CommentsSectionProps) {
-  // TODO: Replace with your own authentication context
-  const session = null as { user?: { info?: { nombreCompleto?: string; email?: string } } } | null; // Placeholder - replace with your auth context
+  const { user } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [newComment, setNewComment] = useState("");
@@ -41,13 +41,22 @@ export default function CommentsSection({
       const data = await getCommentsBySupportMaterial(supportMaterialId);
       setComments(data);
     } catch (error: unknown) {
-      // Solo mostrar error si no es 404 (404 significa que no hay comentarios aún)
+      // No mostrar error si es 404 o 400 (significa que no hay comentarios aún)
       if (axios.isAxiosError(error)) {
-        console.error("Error loading comments:", error);
-        toast.error({ 
-          text: "Error al cargar los comentarios",
-          description: "No se pudieron cargar los comentarios. Intenta nuevamente." 
-        });
+        const status = error.response?.status;
+        
+        // Si es 404 o 400, tratar como "no hay comentarios" (no es un error real)
+        if (status === 404 || status === 400) {
+          console.log("No hay comentarios para este material (status:", status, ")");
+          setComments([]); // Establecer comentarios como array vacío
+        } else {
+          // Para otros errores, mostrar el toast de error
+          console.error("Error loading comments:", error);
+          toast.error({
+            text: "Error al cargar los comentarios",
+            description: "No se pudieron cargar los comentarios. Intenta nuevamente."
+          });
+        }
       }
     } finally {
       setLoading(false);
@@ -68,9 +77,9 @@ export default function CommentsSection({
       return;
     }
 
-    if (!session?.user) {
-      toast.error({ 
-        text: "Debes iniciar sesión para comentar" 
+    if (!user) {
+      toast.error({
+        text: "Debes iniciar sesión para comentar"
       });
       return;
     }
@@ -146,8 +155,8 @@ export default function CommentsSection({
         </div>
       </div>
 
-      {/* Comment Form */}
-      {session?.user && (
+      {/* Comment Form - Siempre mostrar para usuarios autenticados */}
+      {user && (
         <form onSubmit={handleSubmit} className="mb-6">
           <div className="flex flex-col gap-3">
             <div className="relative">
@@ -164,7 +173,7 @@ export default function CommentsSection({
             </div>
             <div className="flex justify-between items-center">
               <p className="text-xs text-gray-500">
-                {session?.user?.info?.nombreCompleto || 'Usuario'}
+                {user?.nombreCompleto || 'Usuario'}
               </p>
               <button
                 type="submit"
@@ -196,20 +205,36 @@ export default function CommentsSection({
             <p className="text-sm text-gray-500">Cargando comentarios...</p>
           </div>
         ) : comments.length === 0 ? (
-          <div className="text-center py-16 px-4">
-            <div className="inline-flex p-4 bg-gray-100 rounded-full mb-4">
-              <MessageSquare
-                className="text-gray-400"
-                size={48}
-              />
+          // Si no hay comentarios y el usuario NO está autenticado, mostrar mensaje
+          !user ? (
+            <div className="text-center py-16 px-4">
+              <div className="inline-flex p-4 bg-gray-100 rounded-full mb-4">
+                <MessageSquare
+                  className="text-gray-400"
+                  size={48}
+                />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                No hay comentarios aún
+              </h3>
+              <p className="text-gray-500 text-sm max-w-sm mx-auto">
+                ¡Sé el primero en compartir tu opinión sobre este contenido!
+              </p>
             </div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              No hay comentarios aún
-            </h3>
-            <p className="text-gray-500 text-sm max-w-sm mx-auto">
-              ¡Sé el primero en compartir tu opinión sobre este contenido!
-            </p>
-          </div>
+          ) : (
+            // Si el usuario está autenticado pero no hay comentarios, mostrar mensaje motivador
+            <div className="text-center py-8 px-4">
+              <div className="inline-flex p-3 bg-blue-50 rounded-full mb-3">
+                <MessageSquare
+                  className="text-blue-500"
+                  size={32}
+                />
+              </div>
+              <p className="text-blue-600 text-sm font-medium max-w-sm mx-auto">
+                ¡Sé el primero en comentar! Usa el formulario de arriba para compartir tu opinión.
+              </p>
+            </div>
+          )
         ) : (
           <>
             <div className="space-y-3">
@@ -221,7 +246,7 @@ export default function CommentsSection({
                   <CommentItem
                     comment={comment}
                     onDelete={handleDelete}
-                    currentUserId={session?.user?.info?.email}
+                    currentUserId={user?.email}
                   />
                 </div>
               ))}

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Loading } from "../components/Loading";
 import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
-import UpdateRequiredForm from "../components/Auth/UpdateRequiredForm";
 import { useAuth } from "../hooks/useAuth";
 
 interface LayoutProps {
@@ -14,7 +13,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
     const router = useRouter();
-    const { status, user, loading } = useAuth();
+    const { status, loading } = useAuth();
 
     useEffect(() => {
         if (status === "unauthenticated") {
@@ -30,9 +29,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         return <Loading />;
     }
 
-    if (user && user.isActive === false) {
-        return <UpdateRequiredForm username={user.nombreCompleto} />
-    }
 
     return (
         <div className="flex h-screen flex-col md:flex-row md:overflow-hidden">
