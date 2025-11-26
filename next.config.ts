@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   images: {
     domains: ["capas.fopinet.com"],
-    output: "standalone",
     remotePatterns: [
       {
         protocol: "https",
