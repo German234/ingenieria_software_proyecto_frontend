@@ -269,7 +269,9 @@ export interface Tutor {
 export interface TutorResponse {
   statusCode: number;
   message: string;
-  data: Tutor[];
+  data: {
+    usuarios: Tutor[];
+  }
   size: number;
   totalPages: number;
   page: number;

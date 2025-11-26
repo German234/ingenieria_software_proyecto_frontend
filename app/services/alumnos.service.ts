@@ -3,7 +3,7 @@ import { api } from "../lib/api";
 import { Estudiante, GetEstudiantesResponse } from "@/app/types/types";
 
 export const getAlumnos = async (): Promise<Estudiante[]> => {
-  const response = await api.get<GetEstudiantesResponse>(
+  const response = await api.get<{ data: { usuarios: Estudiante[] } }>(
     "/user-x-work-groups/alumnos"
   );
   console.log("Datos obtenidos:", response);
@@ -11,8 +11,8 @@ export const getAlumnos = async (): Promise<Estudiante[]> => {
 };
 
 export const deleteAlumno = async (id: string): Promise<void> => {
-    console.log("alumno a eliminar:", id);
-    await api.delete(`/users/${id}`);
+  console.log("alumno a eliminar:", id);
+  await api.delete(`/users/${id}`);
 };
 
 export const createAlumno = async (alumno: Partial<Estudiante>): Promise<Estudiante> => {
