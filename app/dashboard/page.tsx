@@ -1,8 +1,12 @@
 "use client";
 import { Info, Target, Award } from "lucide-react";
 import { DashboardMetricsComponent } from "@/app/components/Dashboard/DashboardMetrics";
+import useAuth from "@/app/hooks/useAuth";
 
 export default function Dashboard() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+
   return (
     <div className="min-h-screen">
       {/* Hero */}
@@ -11,16 +15,18 @@ export default function Dashboard() {
           Dashboard Principal
         </h1>
         <p className="mt-2 text-center text-gray-500 italic">
-          Monitoreo del estado general de la plataforma
+          {isAdmin ? "Monitoreo del estado general de la plataforma" : "Panel de control"}
         </p>
       </div>
 
-      {/* Metrics Section */}
-      <div className="max-w-7xl mx-auto px-4 md:px-0 mt-8">
-        <DashboardMetricsComponent />
-      </div>
+      {/* Metrics Section - Solo para administradores */}
+      {isAdmin && (
+        <div className="max-w-7xl mx-auto px-4 md:px-0 mt-8">
+          <DashboardMetricsComponent />
+        </div>
+      )}
 
-      {/* Definición, objetivos y prioridad */}
+      {/* Definición, objetivos y prioridad - Para todos los usuarios */}
       <div className="max-w-5xl mx-auto px-4 md:px-0 mt-12 space-y-8">
         <h2 className="text-2xl font-semibold text-blue_principal text-center">
           Definición, objetivos y prioridad
