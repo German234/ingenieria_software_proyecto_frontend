@@ -5,7 +5,7 @@ import useAuth from "@/app/hooks/useAuth";
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === 'ADMIN';
 
   return (
     <div className="min-h-screen">
